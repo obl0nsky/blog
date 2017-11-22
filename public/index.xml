@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>obl0nsky</title>
+    <link>http://example.org/</link>
+    <description>Recent content on obl0nsky</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 22 Nov 2017 18:26:59 +0000</lastBuildDate>
+    
+	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Optionality 1</title>
+      <link>http://example.org/posts/optionality-1/</link>
+      <pubDate>Wed, 22 Nov 2017 18:26:59 +0000</pubDate>
+      
+      <guid>http://example.org/posts/optionality-1/</guid>
+      <description>Hello</description>
+    </item>
+    
+  </channel>
+</rss>
