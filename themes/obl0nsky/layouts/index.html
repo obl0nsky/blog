@@ -5,6 +5,14 @@
     <title></title>
   </head>
   <body>
-    HELLLO
+    <a href="/">{{ .Site.Title }}</a>
+    <h1>Posts</h1>
+    <ul>
+    {{ range .Data.Pages }}
+        <li>
+            <a href="{{.Permalink}}">{{.Date.Format "2006-01-02"}} | {{.Title}}</a>
+        </li>
+    {{ end }}
+    </ul>
   </body>
 </html>
