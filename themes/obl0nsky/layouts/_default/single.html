@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <a href="/">{{ .Site.Title }}</a>
-    <h1>{{- .Title -}}</h1>
-    <div class='entry-content'>
-      {{ .Content }}
-    </div>
-  </body>
-</html>
+{{ define "title" }}
+  {{- .Title -}}
+{{ end }}
+
+{{ define "main" }}
+  <div>
+    <em>{{ .Date.Format "2006-01-02" }}</em>
+  </div>
+  <div>
+    {{ .Content }}
+  </div>
+{{ end }}
