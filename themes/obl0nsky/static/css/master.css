@@ -1,0 +1,23 @@
+body {
+  max-width: 800px;
+  text-align: justify;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-bottom: 0px;
+}
+
+a:visited {
+  color: #333;
+}
+
+a:hover {
+  color: blue;
+}
+
+.katex {
+  font-size: 1.1em;
+}
