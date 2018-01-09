@@ -3,6 +3,7 @@ title: "The Loopix Anonymity System (Septimus 1)"
 date: 2018-01-08T18:28:59Z
 tags: septimus
 draft: false
+markup: "mmark"
 ---
 
 The paper we shall be looking at in this post will be: [The Loopix Anonymity System](https://arxiv.org/pdf/1703.00536.pdf).
@@ -24,7 +25,10 @@ Suppose \\(A_i\\) wants to send a message \\(s\\) to \\(A_j\\). If they didn't c
 Now suppose that \\(A_i\\) does not want \\(A_j\\) to know that she was the one who sent the message. How can we ensure that? To do so, we introduce _mix nodes_ which act as a layer of indirection.
 
 \\(A_i\\) can send an encrypted message to a mix node (\\(M_k\\), say) which when unencrypted contains the name of the recipient (in our case \\(A_j\\)) and an encrypted message for \\(A_j\\). When the mix node receives this message, it will then forward on the inner-encrypted message to the specified recipient. The recipient can then decrypt this message and see the original. Because any participant could've given the message to the mix node, \\(A_j\\) cannot tell who sent the message. This is analogous to how the post office works (at least in the UK), albeit without the encryption. Anyone can post a letter. The Royal Mail will receive the letter, and forward it on to the specified address. The recipient does not know who sent it. Concretely,
+
 $$ A_i \xrightarrow{mixEncrypt_k(A_j, encrypt_j(s))} M_k \xrightarrow{encrypt_j(s)} A_j.$$
+
+A> [Question for author: The paper states: "if just one item is repeated in the input and is allowed to be repeated in the output, then the correspondence is revealed for that item". I don't follow this.]
 
 ### Corrupted mix nodes
 However, there is a problem with this. What happens if the mix node is corrupted in someway. Suppose an adversary can see where things are coming in and out of a mix node. If a message is passed to \\(A_j\\) quickly after one was received from \\(A_i\\) then it's a good guess that \\(A_i\\) is sending a message to \\(A_j\\).
@@ -32,14 +36,33 @@ However, there is a problem with this. What happens if the mix node is corrupted
 #### Batches
 One amelioration to this is for mix nodes to batch the sending of messages. For example, it may wait until it gets 20 message, randomly order them[^2], then send them out.
 
+
 #### Cascades
 Instead of just passing a message through one mix node, we can pass it through many. Chaum calls this a _cascade_. We extend our previous model by allowing the address of the unencrypted message we send to be _another_ mix node. Thus we wrap the encrypted messages like russian dolls. For example if we want to send to mix node \\(k\\) then to mix node \\(l\\) we might have:
+
 $$ A_i \xrightarrow{mixEncrypt_k(M_l, mixEncrypt_l(A_j, encrypt_j(s)))} M_k \xrightarrow{mixEncrypt_l(A_j, encrypt_j(s))} M_l \xrightarrow{encrypt_j(s)} A_j.$$
-If an adversary controlled a mix node, they might be able to tell that someone sent a message (\\M_k\\) can tell that \\(A_i\\) sent a message above), or someone received a message (\\M_l\\) can tell that \\(A_j\\) is receiving a message above), but never _both_ for the same message if the message passes through more than one mix node.
+
+If an adversary controlled a mix node, they might be able to tell that someone sent a message \\(M_k\\) can tell that \\(A_i\\) sent a message above), or someone received a message \\(M_l\\) can tell that \\(A_j\\) is receiving a message above), but never _both_ for the same message if the message passes through more than one mix node.
 
 
-### Return addresses
-What we have so far is an effective way to send a message anonymously to another participant in the network. If we now want
+### Replies
+What we have so far is an effective way to send a message anonymously to another participant in the network. What about if \\(A_j\\) wants to send a reply to \\(A_i\\) (despite not knowing their identity). For example, they might want to send a note confirming they have received the original message.
+
+To do this, \\(A_i\\) can include in its message to \\(A_j\\):
+
+- A one-time encrypt function (\\(encrypt\\), say) of which \\(A_i\\) can decode.
+- A mix node to use (\\(M_k\\), say)
+- A pointer to its own address, encrypted using the mix node
+
+With this information, \\(A_j\\) can compose a response (\\(r\\), say), encrypt it using one-time encrypt function, chuck it in a 2-tuple with the encrypted address to the sender, encrypt that tuple using \\(mixEncrypt_k\\) and finally sending that to \\(M_k\\). When the mix node receives this, it can decrypt the message, (note it is still encrypted using the one-time key), decrypt the inner encrypted pointer to the sender, and finally send the encrypted method to the address just revealed. As \\(A_i\\) created the one-time \\(encrypt\\) function, she can decode the message. Visually:
+
+$$ A_i \xrightarrow{mixEncrypt_k(A_j, encrypt_j(s), encrypt, mixEncrypt_k(A_i))} M_k \xrightarrow{encrypt_j(s, encrypt, mixEncrypt_k(A_i))} A_j.$$
+
+and
+
+$$ A_i \xleftarrow{encrypt(r)} M_k \xleftarrow{mixEncrypt_k(encrypt(r), mixEncrypt_k(A_i))} A_j.$$
+
+A> [Question for author: Where does this simple technique breakdown? (the paper and wikipedia have more convoluted expositions involving another private key)]
 
 ## Sources
 
