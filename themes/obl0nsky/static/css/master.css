@@ -21,3 +21,9 @@ a:hover {
 .katex {
   font-size: 1.1em;
 }
+
+aside {
+  font-style: italic;
+  font-size: 16px;
+  color: #ccc;
+}
