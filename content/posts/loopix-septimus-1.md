@@ -28,14 +28,14 @@ Now suppose that \\(A_i\\) does not want \\(A_j\\) to know that she was the one 
 
 $$ A_i \xrightarrow{mixEncrypt_k(A_j, encrypt_j(s))} M_k \xrightarrow{encrypt_j(s)} A_j.$$
 
-A> [Question for author: The paper states: "if just one item is repeated in the input and is allowed to be repeated in the output, then the correspondence is revealed for that item". I don't follow this.]
 
 ### Corrupted mix nodes
-However, there is a problem with this. What happens if the mix node is corrupted in someway. Suppose an adversary can see where things are coming in and out of a mix node. If a message is passed to \\(A_j\\) quickly after one was received from \\(A_i\\) then it's a good guess that \\(A_i\\) is sending a message to \\(A_j\\).
+However, there is a problem with this. What happens if the mix node is corrupted in someway. Suppose an adversary can see which things are coming in and out of a mix node. If a message is passed to \\(A_j\\) quickly after one was received from \\(A_i\\) then it's a good guess that \\(A_i\\) is sending a message to \\(A_j\\).
 
 #### Batches
 One amelioration to this is for mix nodes to batch the sending of messages. For example, it may wait until it gets 20 message, randomly order them[^2], then send them out.
 
+Note that if we send an identical message twice, we also lose the anonymity. This is because an adversary who can observe the direction and content of all the traffic in the network could just follow the 'double' path. The batching adds the benefit that we can't know which output corresponds to which input, but if an adversary sees a double message come in, it know that will match up with a double message going out. To avoid this issue, we can configure the mix nodes to drop any duplicate messages.
 
 #### Cascades
 Instead of just passing a message through one mix node, we can pass it through many. Chaum calls this a _cascade_. We extend our previous model by allowing the address of the unencrypted message we send to be _another_ mix node. Thus we wrap the encrypted messages like russian dolls. For example if we want to send to mix node \\(k\\) then to mix node \\(l\\) we might have:
@@ -62,10 +62,13 @@ and
 
 $$ A_i \xleftarrow{encrypt(r)} M_k \xleftarrow{mixEncrypt_k(encrypt(r), mixEncrypt_k(A_i))} A_j.$$
 
-A> [Question for author: Where does this simple technique breakdown? (the paper and wikipedia have more convoluted expositions involving another private key)]
+A> Question for author: Where does this simple technique breakdown? (the paper and wikipedia have a more convoluted expositions involving another private key)
+
+A> Question for author: Is this extensible to use a cascade of mix nodes on the return leg?
 
 ## Sources
 
+- [Untraceable Electronic Mail, Return Addresses, and Digital Pseudonyms](https://www.cs.umd.edu/class/spring2015/cmsc414/papers/chaum-mix.pdf)
 - [The Loopix Anonymity System](https://arxiv.org/pdf/1703.00536.pdf)
 - [The Differences Between Onion Routing and Mix Networks](https://crypto.is/blog/mix_and_onion_networks)
 - [Why I’m not an Entropist](https://www.freehaven.net/anonbib/cache/entropist.pdf)
