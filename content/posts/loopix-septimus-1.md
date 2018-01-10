@@ -35,7 +35,7 @@ However, there is a problem with this. What happens if the mix node is corrupted
 #### Batches
 One amelioration to this is for mix nodes to batch the sending of messages. For example, it may wait until it gets 20 message, randomly order them[^2], then send them out.
 
-Note that if we send an identical message twice, we also lose the anonymity. This is because an adversary who can observe the direction and content of all the traffic in the network could just follow the 'double' path. The batching adds the benefit that we can't know which output corresponds to which input, but if an adversary sees a double message come in, it know that will match up with a double message going out. To avoid this issue, we can configure the mix nodes to drop any duplicate messages.
+Note that if we send the same message twice (or more), we also lose the anonymity. This is because an adversary who can observe the direction and content of all the traffic in the network could follow the path of the 'double'. The batching adds the benefit that we can't know which output corresponds to which input, but if an adversary sees a 'double' message go in to a mix node, it can match it up with where a double message goes out. To avoid this issue, we can configure the mix nodes to drop any duplicate messages.
 
 #### Cascades
 Instead of just passing a message through one mix node, we can pass it through many. Chaum calls this a _cascade_. We extend our previous model by allowing the address of the unencrypted message we send to be _another_ mix node. Thus we wrap the encrypted messages like russian dolls. For example if we want to send to mix node \\(k\\) then to mix node \\(l\\) we might have:
