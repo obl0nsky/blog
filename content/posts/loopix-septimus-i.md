@@ -1,5 +1,5 @@
 ---
-title: "The Loopix Anonymity System (Septimus 1)"
+title: "The Loopix Anonymity System (Septimus I)"
 date: 2018-01-08T18:28:59Z
 tags: septimus
 draft: false
@@ -9,7 +9,7 @@ markup: "mmark"
 The paper we shall be looking at in this post will be: [The Loopix Anonymity System](https://arxiv.org/pdf/1703.00536.pdf).
 
 ## Mix Networks
-To understand _Loopix_, first we must understand _mix networks_, a concept was first introduced in a [1981 paper](https://www.cs.umd.edu/class/spring2015/cmsc414/papers/chaum-mix.pdf) by David Chaum. Suppose Alice wants to send a secret message to Bob. There are numerous ways (of varying sophistication) in which she can do so. However, suppose in addition that she doesn't want Bob to know that it was _her_ that sent it. Traditional encryption models do not offer such sender anonymity. A _mix network_ is a system designed to offer this additional property. It will also allow Bob to send a message back to the unknown-to-him sender (in our case Alice).
+To understand _Loopix_, first we must understand _mix networks_, a concept was first introduced in a [1981 paper](https://www.cs.umd.edu/class/spring2015/cmsc414/papers/chaum-mix.pdf) by David Chaum. The matter concerned is this. If Alice wants to send a secret message to Bob, there are numerous ways (of varying sophistication) in which she can do so. However, suppose in addition that she doesn't want Bob to know that it was _her_ that sent it. Traditional encryption models do not offer such sender anonymity. A _mix network_ is a system designed to offer this additional property. It will also allow Bob to send a message back to the unknown-to-him sender (in our case Alice).
 
 ### Assumptions and notation
 
@@ -65,6 +65,48 @@ $$ A_i \xleftarrow{encrypt(r)} M_k \xleftarrow{mixEncrypt_k(encrypt(r), mixEncry
 A> Question for author: Where does this simple technique breakdown? (the paper and wikipedia have a more convoluted expositions involving another private key)
 
 A> Question for author: Is this extensible to use a cascade of mix nodes on the return leg?
+
+## Loopix
+
+There are still several weaknesses with the system described above. Loopix (_Ania Piotrowska et al_, 2017) identifies these and introduces remedies.
+
+### Sender online unobservability
+In the original design. An external observer of the traffic (denoted in the paper by the term _global passive adversary_ or _GPA_) flow in the system can see whenever a participant is sending a message. Can we improve the system to give the sender assurance that not only will no-one be able to tell who they are sending a message to, but that they are sending a message at all?
+
+Yes we can. The sender can send out 'fake' messages at regular intervals. These fake messages will be assigned a random cascade path as is done with real messages, and have a special flag telling the final recipient to discard it. As the content of both fake and real messages will look like encrypted noise to a GPA, it will not be able to distinguish between the fake messages and the real messages. We call these fake messages _cover traffic_.
+
+### Receiver unobservability
+Another weakness in the original design is that a GPA can see when a participant receives a message. _Loopix_ solves this with the introduction of _providers_. These are nodes which act as an intermediary between the mix nodes and the participants. They are stateful. When they receive a message, they will store the message (now wrapped in only one layer of encryption) in a letterbox for the intended recipient. Participants will poll providers for their messages. Providers will always return a constant number of messages, padding the response with fake messages if there aren't enough in their letterbox. Once again, a GPA cannot tell if the messages are real or fake.
+
+### High latency
+In the original design, a mix node would have to wait until it received a certain number of messages before releasing a batch. If there was only one messages per 10 minutes and mix nodes released messages in batches of 7, then the first message in a mix node would have to wait around an hour before being passed on.
+
+Another benefit of the _cover traffic_ described above is that it greatly alleviates this problem. An aspect of _Loopix_ hitherto undescribed is that the mix nodes act _continuously_ rather than _discretely_ (sending messages in batches).
+
+Every message received by a mix node also carries a length of time to delay before passing it on. This length of time is chosen independently for each 'hop' by selecting from an exponential variable with parameter \\(\mu\\), where \\(\mu\\) is a global value throughout the entire system. The choice of selecting from an exponential variable has a very useful property: the _memoryless property_. This ensures that if there are N messages waiting in a mix node, a GPA does not have any information about which message will come out next _regardless_ of the order in which they arrived.
+
+The parameter \\(\mu\\) can be tuned to ensure latency is low.
+
+
+### (n-1) Attack
+If we have a strong adversary who can control traffic flow in the network, new attack vectors become open to them. One such vector is an _(n-1) attack_. This is when the adversary will block all but one target message from entering a mix node. They can then observe the message coming out of the mix node and track it's path through the system. To defend against this, Loopix has the mix nodes send _loop traffic_ at regular intervals. These are cover messages which start and end at the same mix node. If the mix node detects that it has stopped receiving the loop traffic it is sending to itself, it can either stop emitting messages altogether, or generate cover traffic so that once again the target message is 'lost'.
+
+
+A> Question for the author: Suppose there was a very popular recipient. Their provider may receive a significantly disproportionate amount of messages. An GPA could see this and infer that at least one user of that provider is receiving
+
+## Conclusion
+The repeated idea behind the improvements of Loopix upon the original design is the adding of noise where none was originally present, and in doing so reducing the information available to an observer of the system.
+
+One might be reminded of the following [passage](https://www.fanfiction.net/s/5782108/72/Harry-Potter-and-the-Methods-of-Rationality) in HPMOR:
+
+> "Well," Harry said, as their shoes pattered across the tiles, "I can't just go around saying 'no' every time someone asks me about something I haven't done. I mean, suppose someone asks me, 'Harry, did you pull the prank with the invisible paint?' and I say 'No' and then they say 'Harry, do you know who messed with the Gryffindor Seeker's broomstick?' and I say 'I refuse to answer that question.' It's sort of a giveaway."
+
+or the [theories](https://www.vanityfair.com/news/2017/03/is-trumps-chaos-a-move-from-the-kremlins-playbook8) on Russian politician Vladislav Surkov's _managed democracies_:
+
+> Surkov turned Russian politics into a bewildering, constantly changing piece of theater. He sponsored all kinds of groups, from neo-Nazi skinheads to liberal human rights groups. He even backed parties that were opposed to President Putin.
+
+> But the key thing was, that Surkov then let it be known that this was what he was doing, which meant that no one was sure what was real or fake. As one journalist put it: "It is a strategy of power that keeps any opposition constantly confused."
+
 
 ## Sources
 
