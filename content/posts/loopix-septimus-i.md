@@ -112,12 +112,8 @@ or the [theories](https://www.vanityfair.com/news/2017/03/is-trumps-chaos-a-move
 
 - [Untraceable Electronic Mail, Return Addresses, and Digital Pseudonyms](https://www.cs.umd.edu/class/spring2015/cmsc414/papers/chaum-mix.pdf)
 - [The Loopix Anonymity System](https://arxiv.org/pdf/1703.00536.pdf)
-- [The Differences Between Onion Routing and Mix Networks](https://crypto.is/blog/mix_and_onion_networks)
-- [Why I’m not an Entropist](https://www.freehaven.net/anonbib/cache/entropist.pdf)
-- [Sleeping dogs lie on a bed of onions but wake
-when mixed](https://petsymposium.org/2011/papers/hotpets11-final10Syverson.pdf)
-- [From a Trickle to a Flood: Active Attacks on
-Several Mix Types](https://www.freehaven.net/anonbib/cache/trickle02.pdf)
+- [USENIX Security '17 - The Loopix Anonymity System](https://www.youtube.com/watch?v=R-yEqLX_UvI)
+
 
 
 [^1]: In reality, an adversary could construct their own version of the decryption function by performing a [preimage attack](https://en.wikipedia.org/wiki/Preimage_attack). If they knew in advance what sort of message is likely to be sent from \\(i\\) to \\(j\\) then they could create a dictionary of encrypted values using the public encryption function of \\(j\\) and the corresponding raw message. When they intercept an encrypted message, they can see if it is present in their dictionary. A form of resistance against this sort of attack is to prepend a random string of known fixed sized to message that is being sent. The recipient can discard the nonsense prefix. This creates a lot of extra work for the adversary as they would have to compute the encrypted messages for a possibly infeasible amount of prefixes.
