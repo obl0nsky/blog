@@ -101,7 +101,7 @@ One might be reminded of the following [passage](https://www.fanfiction.net/s/57
 
 > "Well," Harry said, as their shoes pattered across the tiles, "I can't just go around saying 'no' every time someone asks me about something I haven't done. I mean, suppose someone asks me, 'Harry, did you pull the prank with the invisible paint?' and I say 'No' and then they say 'Harry, do you know who messed with the Gryffindor Seeker's broomstick?' and I say 'I refuse to answer that question.' It's sort of a giveaway."
 
-or the [theories](https://www.vanityfair.com/news/2017/03/is-trumps-chaos-a-move-from-the-kremlins-playbook8) on Russian politician Vladislav Surkov's _managed democracies_:
+or the [theories](https://www.youtube.com/watch?v=Y5ubluwNkqg) on Russian politician Vladislav Surkov's _managed democracies_:
 
 > Surkov turned Russian politics into a bewildering, constantly changing piece of theater. He sponsored all kinds of groups, from neo-Nazi skinheads to liberal human rights groups. He even backed parties that were opposed to President Putin.
 
