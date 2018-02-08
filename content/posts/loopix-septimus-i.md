@@ -1,6 +1,6 @@
 ---
 title: "The Loopix Anonymity System (Septimus I)"
-date: 2018-01-08T18:28:59Z
+date: 2018-01-25T18:28:59Z
 tags: septimus
 draft: false
 markup: "mmark"
@@ -97,15 +97,21 @@ A> Question for the author: Suppose there was a very popular recipient. Their pr
 ## Conclusion
 The repeated idea behind the improvements of Loopix upon the original design is the adding of noise where none was originally present, and in doing so reducing the information available to an observer of the system.
 
-One might be reminded of the following [passage](https://www.fanfiction.net/s/5782108/72/Harry-Potter-and-the-Methods-of-Rationality) in HPMOR:
+One might be reminded of the following:
+
+This [passage](https://www.fanfiction.net/s/5782108/72/Harry-Potter-and-the-Methods-of-Rationality) in HPMOR:
 
 > "Well," Harry said, as their shoes pattered across the tiles, "I can't just go around saying 'no' every time someone asks me about something I haven't done. I mean, suppose someone asks me, 'Harry, did you pull the prank with the invisible paint?' and I say 'No' and then they say 'Harry, do you know who messed with the Gryffindor Seeker's broomstick?' and I say 'I refuse to answer that question.' It's sort of a giveaway."
 
-or the [theories](https://www.youtube.com/watch?v=Y5ubluwNkqg) on Russian politician Vladislav Surkov's _managed democracies_:
+The [theories](https://www.youtube.com/watch?v=Y5ubluwNkqg) on Russian politician Vladislav Surkov's _managed democracies_:
 
 > Surkov turned Russian politics into a bewildering, constantly changing piece of theater. He sponsored all kinds of groups, from neo-Nazi skinheads to liberal human rights groups. He even backed parties that were opposed to President Putin.
 
 > But the key thing was, that Surkov then let it be known that this was what he was doing, which meant that no one was sure what was real or fake. As one journalist put it: "It is a strategy of power that keeps any opposition constantly confused."
+
+Military transport [techniques](https://www.freehaven.net/anonbib/cache/entropist.pdf):
+
+> [I]n the 1970s the United States and the Soviet Union sought to limit the number of nuclear missiles they both had through cooperation and inspection while maintaining security guarantees. A large part of one of the major initiatives involved shuttling Minuteman missiles about in a field of silos to preclude successful first-strike attacks directly on all available missiles. The plan also included techniques for communicating to the adversary an authenticated, integrity-protected report from each silo. The report indicated whether a missile was in the silo or not, but without the adversary being able to determine which silo the report was from (except by silo-unique but random identifier). In a field of 1000 missile silos, the adversary could be sure that exactly 100 would be occupied but would not know which ones were occupied. Note that this anonymity system used “dummy packets” in the form of huge “transportainer” trucks continually shuttling either actual missiles or dummy loads between silos. Talk about system overhead!
 
 
 ## Sources
