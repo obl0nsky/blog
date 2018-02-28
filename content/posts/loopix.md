@@ -1,6 +1,6 @@
 ---
 title: "The Loopix Anonymity System (Septimus I)"
-date: 2018-01-25T18:28:59Z
+date: 2018-01-25
 tags: septimus
 draft: false
 markup: "mmark"

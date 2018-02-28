@@ -1,6 +1,6 @@
 ---
 title: "Locality-sensitive hashing"
-date: 2018-01-31
+date: 2018-02-28
 tags: septimus
 draft: false
 markup: "mmark"
