@@ -24,7 +24,7 @@ If \\(n\\) is fairly small and \\(d\\) is not computationally expensive, then we
 
 The core idea of Locality-Sensitive Hashing is that we apply a hash function to each of the objects which preserves a notion of 'similarity' when comparing the hashes. This is done offline as a one time event and then the results are stored. Then, when we are given a query object \\(q \in M\\), we also hash it and we can efficiently find (the process of which will be described later) a "small" number of objects with a close hash. We then either find the object from this subset that has the smallest distance using the distance function \\(d\\) or by using a distance function on the result of the hashes.
 
-Specifically, we construct a hash function \\(h : C \to \lbrace 0, 1 \rbrace^l\\) for some \\(l\\), the range of which is the Hamming space.  
+Specifically, we construct a hash function \\(h : C \to \lbrace 0, 1 \rbrace^t\\) for some \\(t\\), the range of which is the Hamming space.  
 
 ### What does it mean to preserve similarity
 In the above description, we said that the hashing function should preserve similarity. What does this mean? A _similarity function_ is a function \\(sim : C \times C \to [0,1]\\) for which a result of 0 indicates no similarity between the two arguments, and a result of 1 indicates high similarity (or equality). For a hashing function to preserve similarity we require that
@@ -44,13 +44,13 @@ This essentially says, that \\(h_r(c)\\) is either 1 or 0, depending on which si
 
 Inner products induce the notion of _angles_ between two vectors:
 
-$$\angle(x, y) = \arccos \tfrac{|\langle x, y \rangle|}{\|x\|\|y\|} $$
+$$\angle(x, y) := \arccos \frac{|\langle x, y \rangle|}{\|x\|\|y\|}.$$
 
 For \\(x, y \in M\\), we have:
 
-$$\mathbb{P}[h_r(x) = h_r(y)] = 1 - \frac{\angle(x, y)}{\pi}$$
+$$\mathbb{P}[h_r(x) = h_r(y)] = 1 - \frac{\angle(x, y)}{\pi}.$$
 
-Although we won't prove this claim, ee can get an intuition of it by considering the case of \\(\mathbb{R}^2\\). Take two random points on a plane. Draw a line to the origin from each. Call the angle between these two lines \\(\theta\\). Now pick a random line through the origin. It has a \\(\frac{\theta}{\pi}\\) chance of bisecting the two points. If it does bisect, the inner product of one point with the random vector will be positive, and the other will be negative and so the results of  applying the hash function will be different. In all other cases, the hash function will be the same.
+Although we won't prove this claim, we can get an intuition of it by considering the case of \\(\mathbb{R}^2\\). Take two random points on a plane. Draw a line to the origin from each. Call the angle between these two lines \\(\theta\\). Now pick a random line through the origin. It has a \\(\frac{\theta}{\pi}\\) chance of bisecting the two points. If it does bisect, the inner product of one point with the random vector will be positive, and the other will be negative and so the results of  applying the hash function will be different. In all other cases, the hash function will be the same.
 
 If the angle between \\(x\\) and \\(y\\) is small, then the probability of a hash collision is high. If it's large, then the probability is low. Therefore, as it also must lie between \\(0\\) and \\(1\\), we have the right hand side is a similarity function and thus the hash function is similarity preserving.
 
@@ -63,7 +63,7 @@ We note that the more similar binary strings are, the more 'similar' (in terms o
 A> Question for author: Can we do better than choosing each \\(r_i\\) randomly if we know the data in advance.
 
 ### Search
-We can now describe the efficient search that can take place when we receive a query vector \\(q \in M\\). We need to do more pre-processing. We select \\(N\\) random permutations (\\(\sigma_1, \dots, \sigma_N\\)) of the bits in our \\(m\\)-dimensional Hamming space. Store a list of lexicographically sorted hashes for each permutation. That is for each, \\(\sigma_i\\), store a sorted version of \\(\sigma_i(h(c_1)), \dots, \sigma_i(h(c_n))\\). Call this \\(L_i\\).
+We can now describe the efficient search that can take place when we receive a query vector \\(q \in M\\). We need to do more pre-processing. We select \\(N\\) random permutations (\\(\sigma_1, \dots, \sigma_N\\)) of the bits in our \\(t\\)-dimensional Hamming space. Store a list of lexicographically sorted hashes for each permutation. That is for each, \\(\sigma_i\\), store a sorted version of \\(\sigma_i(h(c_1)), \dots, \sigma_i(h(c_n))\\). Call this \\(L_i\\).
 
 Now, when our query vector \\(q\\) is provided, we calculate its hash, and each permutation of that hash. We then look to see the position in each \\(L_i\\) that \\(\sigma_i(h(q))\\) would take were it sorted within. Take the permuted hash one place above and one place below this position for each \\(L_i\\). We now have \\(2N\\) candidates for being the nearest-neighbour. Either pick the one with the longest prefix match of \\(\sigma_i(h(q))\\) to its neighbour in \\(L_i\\) or use the distance function \\(d\\) from the original metric space to find the minimal distance of the candidates.
 
