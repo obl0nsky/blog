@@ -1,5 +1,5 @@
 ---
-title: "Locality-sensitive hashing"
+title: "Locality-sensitive hashing (Septimus II)"
 date: 2018-02-28
 tags: septimus
 draft: false
