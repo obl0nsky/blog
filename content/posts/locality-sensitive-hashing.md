@@ -33,7 +33,7 @@ $$\mathbb{P}[h_r(x) = h_r(y)] = sim(x, y).$$
 
 
 ### Vector space
-For the original Locality-Sensitive hashing algorithm we also suppose that \\(M\\) is also an inner product space[^1]. That is, it is a vector space with an inner product function. We can construct a hash function as follows. Choose a random hyperplane (as defined by a vector \\(r\\), where each coordinate is selected from a Gaussian with mean 0) that passes through the origin of this vector space. Then, for any given object \\(c \in M\\), we can define
+For the original Locality-Sensitive hashing algorithm we also suppose that \\(M\\) is also an inner product space[^1]. That is, it is a vector space with an inner product function. We can construct a hash function as follows. First, select a random vector, \\(r\\) (where each coordinate is selected from a Gaussian with mean 0). Note that this can induce a hyperplane (the one which is perpendicular to the line between the origin and \\(r\\), and which itself passes through the origin). Then, for any given object \\(c \in M\\), we define
 
 $$h_r(c) = \begin{cases}
    1, &\text{if } \langle r, c \rangle \geq 0   \\
@@ -50,7 +50,7 @@ For \\(x, y \in M\\), we have:
 
 $$\mathbb{P}[h_r(x) = h_r(y)] = 1 - \frac{\angle(x, y)}{\pi}.$$
 
-Although we won't prove this claim, we can get an intuition of it by considering the case of \\(\mathbb{R}^2\\). Take two random points on a plane. Draw a line to the origin from each. Call the angle between these two lines \\(\theta\\). Now pick a random line through the origin. It has a \\(\frac{\theta}{\pi}\\) chance of bisecting the two points. If it does bisect, the inner product of one point with the random vector will be positive, and the other will be negative and so the results of  applying the hash function will be different. In all other cases, the hash function will be the same.
+Although we won't prove this claim[^2], we can get an intuition for it by considering the case of \\(\mathbb{R}^2\\). Take two random points on a plane. Draw a line to the origin from each. Call the (smaller) angle between these two lines \\(\theta\\). Now pick a random point \\(r\\) in space and consider the line perpendicular to the line made by connecting \\(r\\) with the origin. It has a \\(\frac{\theta}{\pi}\\) chance of bisecting the angle. If it does bisect, the inner product of one point with \\(r\\) will be positive (as it makes less than a right angle with \\(r\\)), and the other will be negative (as it makes more than a right angle) and so the results of applying the hash function will be different. In all other cases, the hash function will be the same.
 
 If the angle between \\(x\\) and \\(y\\) is small, then the probability of a hash collision is high. If it's large, then the probability is low. Therefore, as it also must lie between \\(0\\) and \\(1\\), we have the right hand side is a similarity function and thus the hash function is similarity preserving.
 
@@ -60,7 +60,7 @@ The problem, however, is that we are reducing every object down to a single bit.
 
 We note that the more similar binary strings are, the more 'similar' (in terms of cosine distance) they are.
 
-A> Question for author: Can we do better than choosing each \\(r_i\\) randomly if we know the data in advance.
+A> Question for author: Can we do better than choosing each \\(r_i\\) randomly if we know the data in advance?
 
 ### Search
 We can now describe the efficient search that can take place when we receive a query vector \\(q \in M\\). We need to do more pre-processing. We select \\(N\\) random permutations (\\(\sigma_1, \dots, \sigma_N\\)) of the bits in our \\(t\\)-dimensional Hamming space. Store a list of lexicographically sorted hashes for each permutation. That is for each, \\(\sigma_i\\), store a sorted version of \\(\sigma_i(h(c_1)), \dots, \sigma_i(h(c_n))\\). Call this \\(L_i\\).
@@ -72,7 +72,7 @@ Because searching a sorted list is \\(\mathcal{O}(\ln n)\\), we have the whole s
 
 ## Conclusion
 
-We've successfully made a hard search problem more efficient. In practice this enables powerful things like Google's reverse image search or Souncloud's song recommendation system that would never have been feasible with a brute force approach.
+We've successfully made a hard search problem more efficient. In practice this enables powerful things like Google's reverse image search or Soundcloud's song recommendation system that would never have been feasible with a brute force approach.
 
 ### Real life analogy
 We can think of the process as akin to a guessing game. Suppose I have just finished reading _Wolf Hall_ - Hilary Mantel's fictionalised biography of Thomas Cromwell - and I'd like to find a similar book to read. I go down to the library and speak to the librarian who asks me questions about the book (without knowing exactly what it is). She has organised the register of books in her library according a pre-determined list of properties. She has a list of non-fiction books and a list of fiction books. Then for each of these lists, it is further broken down into whether they concern events before or after 1900. And so on into further sub-lists for more criteria. So she asks:
@@ -81,13 +81,11 @@ We can think of the process as akin to a guessing game. Suppose I have just fini
 3. Is the protagonist female (No)
 4. etc...
 
-After question one, she will discard her 'non-fiction' pile. She's left with a pile of fiction book pre-1900 and a pile of fiction books post 1900. She then discards the post-1900 file and so on. After these 3 questions, we are left with a list of books which share the same properties as Wolf Hall - and the librarian never had to scan the list of books manually - she just discarded whole groups of books as we went. We continue the process until we have only two books left (backtracking to a wrong answer pile if we run out of books).
+After question one, she will discard her 'non-fiction' pile. She's left with a pile of fiction book pre-1900 and a pile of fiction books post 1900. She then discards the post-1900 file and so on. After these 3 questions, we are left with a list of books which share the same properties as Wolf Hall - and the librarian never had to scan the list of books manually - she just discarded whole groups of books as we went. We continue the process until we have only two books left (backtracking to a wrong answer pile if we run out of books). TODO, actually it's more likely we just want a random one here.
 
 However, there is a problem with this. What if the most similar book is actually Tracey Borman's historical biography of Thomas Cromwell? As it is a non-fiction book, this was discarded at the very first stage by the librarian! We need to visit another librarian who has organised the books according to the same questions, but in a different order.
 
 So we tour 10 librarians who each have different ordering systems and get 2 book recommendations from each. From there we just manually inspect the 20 books to see which one is closet to _Wolf Hall_. This is a far more efficient way than manually looking at every book in the library to see how similar it is to Wolf Hall!
-
-
 
 ## Sources
 
@@ -98,3 +96,5 @@ Algorithms - Charikar (2002)](https://www.cs.princeton.edu/courses/archive/spr04
 
 
 [^1]: There are extensions of the theory such as that by [_Kulis et al_](http://www.cs.utexas.edu/~grauman/papers/iccv2009_klsh.pdf) which generalise the process to a much broader class of spaces
+[^2]: A proof can be found at Lemma 3.2 in [Improved Approximation Algorithms for Maximum Cut and Satisfiability Problems Using
+Semidefinite Programming - Goemans & Williamson]( http://www-math.mit.edu/~goemans/PAPERS/maxcut-jacm.pdf)
