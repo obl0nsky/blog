@@ -16,24 +16,24 @@ Since the early 1990s and the proliferation of computer aided textual analysis, 
 
 A> Question for author: was this normalised somehow?
 
-In 2018, Dennis McCarthy and June Schlueter [unearthed](https://www.nytimes.com/2018/02/07/books/plagiarism-software-unveils-a-new-source-for-11-of-shakespeares-plays.html) a potential new source of inspiration for Shakespeare using a similar technique - George North's manuscript titled _A Brief Discourse of Rebellion and Rebels_:
+In 2018, Dennis McCarthy and June Schlueter [unearthed](https://www.nytimes.com/2018/02/07/books/plagiarism-software-unveils-a-new-source-for-11-of-shakespeares-plays.html) a potential new source of inspiration for Shakespeare, George North's manuscript titled _A Brief Discourse of Rebellion and Rebels_, using a similar technique:
 
 > Mr. McCarthy used decidedly modern techniques to marshal his evidence, employing WCopyfind, an open-source plagiarism software, which picked out common words and phrases in the manuscript and the plays.
 
-> In the dedication to his manuscript, for example, North urges those who might see themselves as ugly to strive to be inwardly beautiful, to defy nature. He uses a succession of words to make the argument, including “proportion,” “glass,” “feature,” “fair,” “deformed,” “world,” “shadow” and “nature.” In the opening soliloquy of Richard III (“Now is the winter of our discontent …”) the hunchbacked tyrant uses the same words in virtually the same order to come to the opposite conclusion: that since he is outwardly ugly, he will act the villain he appears to be.
+> In the dedication to his manuscript, for example, North urges those who might see themselves as ugly to strive to be inwardly beautiful, to defy nature. He uses a succession of words to make the argument, including “proportion,” “glass,” “feature,” “fair,” “deformed,” “world,” “shadow” and “nature.” In the opening soliloquy of Richard III (“Now is the winter of our discontent...”) the hunchbacked tyrant uses the same words in virtually the same order to come to the opposite conclusion: that since he is outwardly ugly, he will act the villain he appears to be.
 
 The idea is to reduce a text down to various statistics and see how those  compare between texts.
 
 ## Elena Ferrante
 Elena Ferrante is an anonymous author. 'She' has published several novels in Italian including the critically acclaimed and commercially successful series dubbed _The Neapolitan Novels_. Due to the eminence of these books, there has been wild speculation on the true identity of the author with numerous wannabe detectives thinking they have deduced it.
 
-One attempt, by Marco Santagata, [was done](https://www.nytimes.com/2016/03/14/books/who-is-elena-ferrante-an-educated-guess-causes-a-stir.html?_r=0) using traditional investigative pattern matching:
+One [attempt](https://www.nytimes.com/2016/03/14/books/who-is-elena-ferrante-an-educated-guess-causes-a-stir.html?_r=0) to uncover the identity, done by Marco Santagata, used traditional intuitive pattern matching:
 
 > “I did philological work, as if I were studying the attribution of an ancient text, even though it’s a modern text,” added Mr. Santagata, a philologist by training and an expert on Petrarch and Dante who teaches at the University of Pisa.
 
 > [...]
 
-> “I created a profile — I didn’t say it was her,” Mr. Santagata said in a telephone interview, adding that he had never met or been in touch with Ms. Marmo. He said he had determined that some street names in the books were changed in Pisa after 1968, suggesting that the author must have left Pisa before then. Looking in Scuola Normale yearbooks, he found she seemed to be the only Neapolitan woman at Pisa in the mid 1960s who had become an expert in the contemporary Italian history that is the backdrop to Ms. Ferrante’s Naples books.
+> “I created a profile [...]” Mr. Santagata said in a telephone interview. [...] He said he had determined that some street names in the books were changed in Pisa after 1968, suggesting that the author must have left Pisa before then. Looking in Scuola Normale yearbooks, he found she seemed to be the only Neapolitan woman at Pisa in the mid 1960s who had become an expert in the contemporary Italian history that is the backdrop to Ms. Ferrante’s Naples books.
 
 A different attempt, this time by correlating a literary couple's financial situation with the success of the books appears more convincing. Claudio Gatti [suspects](http://www.nybooks.com/daily/2016/10/02/elena-ferrante-an-answer/) that the true identity of the author is Anita Raja, a Rome-based translator. He notes:
 
@@ -49,13 +49,14 @@ A third attempt was to use a statistical analysis of the texts (also known as _s
 
 The high level idea is to take a corpus of documents, quantify various style-related features from them and then pairwise compare the style of each document to see how similar they are.
 
-For the analysis, Savoy collated a corpus of texts by a range of authors who might be candidates for the identity of Ferrante. He selected 150 books across 40 different authors including all the main candidates.
+For the analysis, Savoy collated a corpus of texts by a range of authors who might be candidates for the identity of Ferrante. He selected 150 books across 40 different authors including many of the main candidates suggested for authorship. He notes:
+> This set contains ten authors originating from the region (Campania) that appear in the background of the My Brilliant Friend tetralogy.  In addition, when generating this corpus, thirteen female writers have been selected.  Therefore, one can conclude that a real effort has been deployed to include  many authors sharing some important extra-textual relationships with Ferrante (e.g., a woman coming from Naples or environs).   
 
 ### Tokenising
 
-We prepare all texts by _tokenising_ them first. This is a process whereby each word is 'normalised' by stripping punctuation and numbers and converting to lower case.
+We prepare all the texts by _tokenising_ them first. This is a process whereby each word is 'normalised' This typically always involves initially stripping punctuation and numbers from words and converting to lower case.
 
-Optionally, in addition, we can use a 'part-of-speech' tagger to identify how a word was used. For example, in the sentence, "Elena is anonymous", we'd have:
+Optionally, in addition, we can use a 'part-of-speech' tagger to annotate the word with how was used. For example, in the sentence, "Elena is anonymous", we'd have:
 
 Word      | Part of speech
 ----------|---------------
@@ -63,24 +64,28 @@ elena     | proper noun
 is        | verb
 anonymous | adjective
 
-This is a non-trivial task and there have been many attempts to solve it over the years. We can't just have a mapping from a word to a part of speech as some words can be used in more than one way. For example, consider the sentence "Graham hounds the dilettante". In this instance, 'hounds' is used as a verb. Now consider the sentence "Andrew released the hounds". In this instance, 'hounds' is used as a plural noun.
+Doing this computationally is a non-trivial task and there have been many attempts to implement algorithms to do it over the years. One of the main problems lies in the fact that we can't just have a mapping from a word to a part of speech as some words can be used in more than one way. For example, consider the sentence "Graham hounds the dilettante". In this instance, 'hounds' is used as a verb. Now consider the sentence "Andrew tended to the hounds". In this instance, 'hounds' is used as a plural noun.
 
 Furthermore, consider the following sentence: "Simon was entertaining last night". We cannot deduce which part of speech 'entertaining' represents. Was Simon hosting guests, or was he providing delight?
 
-[Insert bit about how POS is done here]
+These ambiguities might not be too problematic depending on what accuracy we would like to achieve. Work that has been done on a corpus of real world text has shown that if we assign to each word its most common part-of-speech, and assign 'proper noun' to any unknowns, we can attain 90% accuracy in the tagging.
 
-Another optional step of normalisation is to reduce verb conjugations to their 'dictionary entry' form. For example, _amico_, _amica_ and _amici_ will all be reduced to _amico_.
+One way to counter ambiguity is to consider the surrounding words. For example, an word following a 'the' is likely to be a noun or an adjective. So if the word 'hound' succeeds a 'the', we can be reasonably confident it won't be being used as a verb and so can attribute it to being a noun (as 'hound' cannot be used as an adjective). This idea has been formalised using hidden markov models and can achieve accuracy of 93-95%.
 
-Picking which normalisation strategies to use is mainly an art. All that matters for the authorship identification techniques we define below is that for each corpus text \\(A_i\\), we normalise to a list of tokens of the same type.
+Another optional step of normalisation is to reduce verb conjugations to their 'dictionary entry' form. For example, _amico_, _amica_ and _amici_ should all be reduced to _amico_.
+
+Picking which normalisation strategies to use is dependent on the context and maybe require subjective judgement. All that matters for the authorship identification techniques we define below is that for each corpus text, we normalise it to a list of tokens of the same type.
 
 ### Terminology
-We shall define some terminology. Let \\(Q\\) be a query text (i.e. the text we would like to attribute authorship to) and let \\(A_1, \dots, A_k\\) be the corpus texts (i.e. the texts we would like out query text to match against). Let \\(C := A_1 + \dots + A_k\\) be the concatenation of all the corpus texts. Let \\(B_i\\) be the concatenation of all texts by author \\(i\\). [will i actually use this?]. Tokens will be referred to using the letter \\(t\\).
+We shall define some terminology. Let \\(Q\\) be a query text (i.e. the text we would like to attribute authorship to) and let \\(A_1, \dots, A_k\\) be the corpus texts (i.e. the texts we would like out query text to match against). Let \\(C := A_1 + \dots + A_k\\) be the concatenation of all the corpus texts. Let \\(B_j\\) be the concatenation of all texts by author \\(j\\). Tokens will be referred to using the letter \\(t\\).
 
-### Delta method
+### Methods
 
-The first technique that Savoy employs is the delta method. This was first described in a paper titled [_‘Delta’: a Measure of Stylistic Difference and a Guide to Likely Authorship_](https://academic.oup.com/dsh/article/17/3/267/929277) by John Burrows. In it, he introduces the method and then shows that it can correctly identify the authors of texts by English Restoration poets such as John Milton. The technique is fairly elementary. We aim to give a query text \\(Q\\) a delta score (often just denoted with the character \\(\Delta\\)) against a source text \\(A_i\\). The lower the delta, the more similar the texts.
+#### Delta method
 
-The way we calculate this is as follows. We take a list of \\(N\\) popular tokens. Often this is just the top \\(N\\) token in the entire corpus. For each token \\(t_i\\) in this list and for each author corpus \\(B_j\\) we first calculate the frequency with which that token appears in that corpus. That is we define
+The first technique that Savoy employs is the delta method. This was first described in a paper titled [_‘Delta’: a Measure of Stylistic Difference and a Guide to Likely Authorship_](https://academic.oup.com/dsh/article/17/3/267/929277) by John Burrows. In it, he introduces the method and then shows that it can correctly identify the authors of texts by English Restoration poets such as John Milton. The technique is fairly elementary (although it was described as 'ground-breaking' in [one paper](https://academic.oup.com/dsh/article/32/suppl_2/ii4/3865676)!). We aim to give a query text \\(Q\\) a delta score (often just denoted with the character \\(\Delta\\)) against an author corpus \\(B_j\\). The lower the delta, the more similar the texts.
+
+The way we calculate this is as follows. We take a list of \\(N\\) popular tokens. Often this is just the top \\(N\\) tokens in the entire corpus. For each token \\(t_i\\) in this list and for each author corpus \\(B_j\\) we first calculate the frequency with which that token appears in that corpus. That is,  we define
 
 $$f_i(B_j) := \frac{|\{t : t \in B_j, t = t_i\}|}{|B_j|}$$
 
@@ -88,11 +93,11 @@ At this point, we could define
 
 $$\Delta(Q, B_j) := \frac{1}{N} \sum_{1 \leq i \leq N} |f_i(Q) - f_i(B_j)|$$
 
-which is the average difference in percentage for each of the top N token between the query text and a particular author's corpus. So if a particular used the word 'the' 4.5% of the time, and the query text used it 5.1% of the time, that would contribute 0.6% in the summation.
+which is the average difference in percentage for each of the top N token between the query text and a particular author's corpus. So if a particular author used the word 'the' 4.5% of the time, and the query text used it 5.1% of the time, that would contribute 0.6% in the summation.
 
-There is a problem with this however. Word frequencies in languages tend to follow Zipf's law. This states that the frequency of a word in a language is inversely proportional to it's ranking when the words are ordered by frequency. So we would expect the most frequent word to be twice as common as the second most frequent word, and three times as common as the third most frequent word. The ramification of this is that the differences in frequencies for the more common words will likely contribute a larger amount to the total delta score.
+There is a problem with this however. Word frequencies in most languages tend to follow Zipf's law. This states that the frequency of a word in a language is inversely proportional to it's ranking when the words are ordered by frequency. So we would expect the most frequent word to be twice as common as the second most frequent word, and three times as common as the third most frequent word. The ramification of this is that the differences in frequencies for the more common words will likely contribute a larger amount to the total delta score.
 
-We therefore standardise the score for each token \\(t_i\\) such that it has a mean of 0 and standard deviation of 1 over each document. We do this by calculating the frequency of a token in each corpus document \\(A_j\\). Then we take the mean and standard deviation of these frequencies - denote these as \\(\mu_i\\) and \\(\sigma_i\\), respectively. Finally, we define
+We therefore standardise the score such that for each token \\(t_i\\) such that it has a mean of 0 and standard deviation of 1 over all documents. We do this by calculating the frequency of a token in each corpus document \\(A_j\\). Then we take the mean and standard deviation of these frequencies - denote these as \\(\mu_i\\) and \\(\sigma_i\\), respectively. Finally, we define
 
 $$ z_i(B_j) := \frac{f_i(B_j) - \mu_j}{\sigma_j}$$
 
@@ -104,79 +109,53 @@ $$\Delta(Q, B_j) := \frac{1}{N} \sum_{1 \leq i \leq N} |z_i(Q) - z_i(B_j)|$$
 
 We look for the  author corpus with the smallest \\(\Delta\\).
 
-The results of this technique is that every one of the seven Ferrante novels is closest to the Domenico Starnone corpus for each value of \\(N\\) (the number of tokens to use) of 100, 200, 300, 400, 500, 1000, and 2000.
+The results of this technique is that every one of the seven Ferrante novels is closest to the Domenico Starnone corpus for each value of \\(N\\) (the number of most-frequently seen tokens to use) of 100, 200, 300, 400, 500, 1000, and 2000. We note here that Domenico Starnone is a Neapolitan novelist and is the husband of the afformentioned translator Anita Raja.
 
->https://watermark.silverchair.com/fqx023.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAaowggGmBgkqhkiG9w0BBwagggGXMIIBkwIBADCCAYwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMQ9Jr9jjy1UKYouS0AgEQgIIBXVQgBsu3_mR4YXAHlOKo3w9_u2UbMlIbQ4H0B573NI1GpQl5uXqOnb33dUFdggw3ojMwbRiHNb6nhKlfRVsgk_0Dh9-EE30YCND7mZxKYFkNHd--k5LwS1DQ49a5GJFIKWxLpYCSQ_DDKmG19TtI7syQ60hpkwQX8FB-QMEnG0EzfO0kwd2K2lkpFEQyGV9GuUyHlf6bGP0WGhD5pUVnO44Y9ML7p0cbO0fPfEpQCEAsPolRXbtAG62Vorq63Q-rJd0_gFg2CI4ucUfh0mfJ_9AZjRIOyw68h5iusuoWiC18EQmWf2NQqPX6qPLZ35TKy4owDK1dy3-5_g6rjXKiPGe83VK8aErPmjqvhoIh0RhAwdYtnwmHvh4E-iOxrUg6VbFqrL-aImDJK-MjmhFCHJfWkccRQm8fawOfyosUnXn3wtqqBKh6U-WAAjXrDuW7GkWR8OTCiLFX87IIwgU
-
-ground-breaking!
-
-### Labbé's distance
+#### Labbé's distance
 
 The second technique employed is using a distance defined by Dominique Labbé in a paper called [_'Experiments on Authorship Attribution by Intertextual
-Distance in English'_](https://halshs.archives-ouvertes.fr/halshs-00139070/document). Again, we try to define some some or distance between two texts. This time, the calculation is independent of the entire corpus (unlike Burrows' delta which standardised based on the entire corpus). It can be expressed in a simple formula. First, let the _absolute frequency_ of a token be the number of times a token appears in a text. Define it as
+Distance in English'_](https://halshs.archives-ouvertes.fr/halshs-00139070/document). Again, we try to define some some or distance between two texts. This time, the calculation is independent of the entire corpus (unlike Burrows' \\(\Delta\\) which standardised based on the entire corpus). It can be expressed in a simple formula. First, let the _absolute frequency_ of a token be the number of times a token appears in a text. Define it as
 
 $$g_i(A_j) := |\{t : t \in A_j, t = t_i\}|$$
 
-Suppose we want to compute the distance between two texts \\(A_j\\) and \\(A_k\\). Without loss of generality assume that \\(A_j\\) has less tokens  than \\(A_k\\) (i.e. it is a longer text). We define
+Suppose we want to compute the distance between two texts \\(A_j\\) and \\(A_k\\). Without loss of generality assume that \\(A_j\\) has less tokens  than \\(A_k\\) (i.e. it is a shorter text). We define
 
-$$g'_i(A_k) := |\{t : t \in A_j, t = t_i\}| \frac{|A_j|}{|A_k|}$$
+$$g'_i(A_k) := g_i(A_k) \frac{|A_j|}{|A_k|}$$
 
-to proportionalise the frequencies in \\(A_j\\). Then finally we define
+to 'proportionalise' the frequencies in \\(A_j\\). Then finally we define the Labbé distance:
 
 $$D(A_j, A_k) := \frac{1}{2|A_j|} \sum_{1 \leq i \leq N} |g_i(A_j) - g'_i(A_k)|$$
 
-A> Question for author: Does this use every term?
+The summation varies over all \\(N\\) tokens seen in the concatenation of the two texts. We divide the sum by \\(2|A_j|\\) so the distance ranges from 0 to 1. If both texts have the exact same frequency of every token, each term in the summation will be 0 and so the distance will be zero. If every token in text \\(A_j\\) was different to every token in \\(A_j\\) (i.e. one text was in Arabic and one was in Portuguese), then the sum would add up to \\(|A_j| + |A_k||A_j|/|A_k| = 2|A_j|\\) so the distance would be 1.
 
-A> Question for author: Is this basically equivalent to our first attempt at defining \\(\Delta\\) above??
+A> Question for author: Is this basically equivalent to our first attempt at defining \\(\Delta\\) above?
 
-Talk about results here.
+Next, we calculate the Labbé distance for every pair of texts in our corpus (excluding Ferrante novels). From these scores we can construct a distribution of distances for texts with the same author and texts with different authors. Savoy chooses a beta distribution as this ranges between 0 and 1 (like the distance function) and can describe gaussian-like distributions (the distances cluster around a mean and then drop off on each side).
 
-> ccording to the formalism described in [24], one can estimate the probability that Starnone is the author of Storia della bambina perduta (DocID = 52 in Table 1) with a probability of 0.99.  
+We calculate the distances of the Ferrante novels with every other text. If we order these by smallest distance first, we find that the first 10 or so texts are all Ferrante-Starnone pairs. Additionality, the distance between these is much closer to the mean of the same-author distance distribution than the mean of the different-author distribution. Savoy formalises this further. Using methods described in one of his own [previous papers](https://onlinelibrary.wiley.com/doi/pdf/10.1002/asi.23455) he claims "one can estimate the probability that Starnone is the author of Storia della bambina perduta [A Ferrante novel] with a probability of 0.99.". While the evidence is compelling, this seems to be a loose use of the word 'probability'. It does not account for our the uncertainty that the beta distribution is accurate (for example, consider constructing the beta distributions from a corpus consisting of two texts by Charles Dickens and 2 texts by Martin Amis - it wouldn't be representative of all texts).
 
-Seems spurious! defined in https://onlinelibrary.wiley.com/doi/pdf/10.1002/asi.23455
+A> Question for author: Might a more bayesian approach yield a better probability?
 
-
-### Nearest shruken centroids
-Finally, we introduce the
+#### Nearest shruken centroids
+Finally, we introduce the Nearest shrunken centroids technique.
 
 
 ## Conclusion
 
-Morality?
-https://www.npr.org/sections/thetwo-way/2016/10/03/496406869/for-literary-world-unmasking-elena-ferrantes-not-a-scoop-its-a-disgrace
+Each of these methods suggests the closet stylometric match in the corpus is the works of Dominique Starnone. However, the evidence to suggest that he is almost certainly the "hidden hand behind Elena Ferrante" remains not entirely convincing.
 
-Gender?
-https://www.harpersbazaar.com/culture/art-books-music/a21803/my-brilliant-friend-tv-show-male-director/
+### Correlative techniques
+Firstly, one might think that because we have used multiple different methods to attack the problem and they have all produced the same answer, then we should be much more confident than had we used just a single method. However, each of the three techniques applied in this paper is merely a variation on a single theme. They all analyse the frequency with which certain words are used in a text compared to other texts. We should expect to see a high correlation between the answers of each. Importantly, if there is an error in one analysis, it is likely to be present in all the analyses.
 
+### Closed set search
+Another criticism of the paper would be to note that it takes a self-confessed 'closed-set' approach. That is, it assumes the author must be one of the pre-selected candidates. Savoy notes that "[t]he underlying corpus contains all novelists that have been mentioned as possible secret hands behind Ferrante". However, as noted in the _New York Review of Books_ article above, Stanone's wife, Anita Raja is a likely candidate yet she has no works in the selected corpus. In fairness to Savoy, she has no original published works so her writing style could not be analysed.
 
-Closed set?
-Misapplying a Closed-Set Technique
-for an Open-Set Problem
-In their study, Criddle and associates treat the
-set of candidate authors as a “closed set,” assuming
-that they knew with certainty that the true
-author was one of the authors in their candidate
-set. Although such an assumption would
-be appropriate when using NSC in the genomic
-studies for which it was originally developed,
-this is not appropriate in most authorship attribution
-studies. The case of The Federalist Papers is
-a situation where the true author was known to
-be in the candidate set—the twelve disputed articles
-were written by either Alexander Hamilton
-or James Madison, and by no one else. Such a
-well-defined closed-set problem as The Federalist
-Papers is a rarity in authorship attribution studies.
-https://publications.mi.byu.edu/publications/review/23/1/S00007-51769fad6dedc7Fields.pdf
+### Attribution
+Based on the traditional journalism, it seems highly likely that the author of the texts is either Anita Raja, Domenico Starnone or a collaboration between the two.
 
-Confusing “Closest” to Mean “Close”
-The logic of Criddle and associates’ approach
-is no different than asking, “Choosing among
-Boston, New York, and Chicago, which city is
-closest to Los Angeles?” and then, upon finding
-that there is a 99 percent probability that Chicago
-is the closest, concluding that “Chicago is the city
-in the United States that is closest to Los Angeles.”
-https://publications.mi.byu.edu/publications/review/23/1/S00007-51769fad6dedc7Fields.pdf
+Based on the exposition in the present paper by Jacques Savoy, it appears that Starnone shares an unusually similar writing style to Ferrante.
 
-https://www.nytimes.com/2018/02/07/books/plagiarism-software-unveils-a-new-source-for-11-of-shakespeares-plays.html
+Additional [qualitative analysis](http://www.the-next-stage.com/2017/03/laces-powerful-novel-by-domenico.html), provides biographyical evidence for the authorship of Starnone over Raja:
+> The powerfully rendered portrait of growing up in deep poverty in 1950’s Naples feels like it was written from first hand experience. Raja did not have this direct experience but Starnone, like the fictional Ferrante, was the son of a seamstress and did grow up in Naples.
+
+This correspondent concludes that is most likely that Starnone is Ferrante, followed by Ferrante as a joint project between the two (it would be hard not to collaborate on some level as a married couple) and finally the Raja is Ferrante. This correspondent assigns a negligible probability to any other author.
