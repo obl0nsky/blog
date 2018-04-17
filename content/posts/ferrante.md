@@ -77,7 +77,7 @@ Another optional step of normalisation is to reduce verb conjugations to their '
 Picking which normalisation strategies to use is dependent on the context and maybe require subjective judgement. All that matters for the authorship identification techniques we define below is that for each corpus text, we normalise it to a list of tokens of the same type.
 
 ### Terminology
-We shall define some terminology. Let \\(Q\\) be a query text (i.e. the text we would like to attribute authorship to) and let \\(A_1, \dots, A_k\\) be the corpus texts (i.e. the texts we would like out query text to match against). Let \\(C := A_1 + \dots + A_k\\) be the concatenation of all the corpus texts. Let \\(B_j\\) be the concatenation of all texts by author \\(j\\). Tokens will be referred to using the letter \\(t\\).
+We shall define some terminology. Let \\(Q\\) be a query text (i.e. the text we would like to attribute authorship to) and let \\(A_1, \dots, A_M\\) be the \\(M\\) corpus texts (i.e. the texts we would like out query text to match against). Let \\(C := A_1 + \dots + A_k\\) be the concatenation of all the corpus texts. Let \\(B_j\\) be the set of all texts by author \\(j\\) and let \\(\hat{B}_j\\) be the concatenation of all the tokens used in texts by author \\(j\\). Let \\(J\\) represent the number of authors. Tokens will be referred to using the letter \\(t\\).
 
 ### Methods
 
@@ -87,7 +87,7 @@ The first technique that Savoy employs is the delta method. This was first descr
 
 The way we calculate this is as follows. We take a list of \\(N\\) popular tokens. Often this is just the top \\(N\\) tokens in the entire corpus. For each token \\(t_i\\) in this list and for each author corpus \\(B_j\\) we first calculate the frequency with which that token appears in that corpus. That is,  we define
 
-$$f_i(B_j) := \frac{|\{t : t \in B_j, t = t_i\}|}{|B_j|}$$
+$$f_i(B_j) := \frac{|\{t : t \in \hat{B}_j, t = t_i\}|}{|\hat{B}_j|}$$
 
 At this point, we could define
 
@@ -114,7 +114,7 @@ The results of this technique is that every one of the seven Ferrante novels is 
 #### Labbé's distance
 
 The second technique employed is using a distance defined by Dominique Labbé in a paper called [_'Experiments on Authorship Attribution by Intertextual
-Distance in English'_](https://halshs.archives-ouvertes.fr/halshs-00139070/document). Again, we try to define some some or distance between two texts. This time, the calculation is independent of the entire corpus (unlike Burrows' \\(\Delta\\) which standardised based on the entire corpus). It can be expressed in a simple formula. First, let the _absolute frequency_ of a token be the number of times a token appears in a text. Define it as
+Distance in English'_](https://halshs.archives-ouvertes.fr/halshs-00139070/document). Again, we try to define some idea of distance between two texts. This time, the calculation is independent of the entire corpus (unlike Burrows' \\(\Delta\\) which standardised based on the entire corpus). It can be expressed in a simple formula. First, let the _absolute frequency_ of a token be the number of times a token appears in a text. Define it as
 
 $$g_i(A_j) := |\{t : t \in A_j, t = t_i\}|$$
 
@@ -132,20 +132,69 @@ A> Question for author: Is this basically equivalent to our first attempt at def
 
 Next, we calculate the Labbé distance for every pair of texts in our corpus (excluding Ferrante novels). From these scores we can construct a distribution of distances for texts with the same author and texts with different authors. Savoy chooses a beta distribution as this ranges between 0 and 1 (like the distance function) and can describe gaussian-like distributions (the distances cluster around a mean and then drop off on each side).
 
-We calculate the distances of the Ferrante novels with every other text. If we order these by smallest distance first, we find that the first 10 or so texts are all Ferrante-Starnone pairs. Additionality, the distance between these is much closer to the mean of the same-author distance distribution than the mean of the different-author distribution. Savoy formalises this further. Using methods described in one of his own [previous papers](https://onlinelibrary.wiley.com/doi/pdf/10.1002/asi.23455) he claims "one can estimate the probability that Starnone is the author of Storia della bambina perduta [A Ferrante novel] with a probability of 0.99.". While the evidence is compelling, this seems to be a loose use of the word 'probability'. It does not account for our the uncertainty that the beta distribution is accurate (for example, consider constructing the beta distributions from a corpus consisting of two texts by Charles Dickens and 2 texts by Martin Amis - it wouldn't be representative of all texts).
+We calculate the distances of the Ferrante novels with every other text. If we order these by smallest distance first, we find that the first 10 or so texts are all Ferrante-Starnone pairs. Additionality, the distance between these is much closer to the mean of the same-author distance distribution than the mean of the different-author distribution. Savoy formalises this further. Using methods described in one of his own [previous papers](https://onlinelibrary.wiley.com/doi/pdf/10.1002/asi.23455) he claims "one can estimate the probability that Starnone is the author of Storia della bambina perduta [A Ferrante novel] with a probability of 0.99". While the evidence is compelling, this seems to be a loose use of the word 'probability'. It does not account for the uncertainty of if the beta distribution is accurate (for example, consider constructing the beta distributions from a corpus consisting of two texts by Charles Dickens and 2 texts by Martin Amis - it wouldn't be representative of all texts).
 
 A> Question for author: Might a more bayesian approach yield a better probability?
 
-#### Nearest shruken centroids
-Finally, we introduce the Nearest shrunken centroids technique.
+#### Nearest shrunken centroids
+Finally, we introduce the Nearest shrunken centroids method. This is a classification technique first developed in the field of genetics. It was introduced in a [paper](https://projecteuclid.org/download/pdf_1/euclid.ss/1056397488) by _Tibshirani et al_ in 2003 and has subsequently been re-purposed by those in the stylometrics community. For example, it was used in a [paper](https://academic.oup.com/dsh/article-abstract/23/4/465/1039019?redirectedFrom=fulltext) by _Jockers_ et al in an attempt to discern the author(s) of chapters from the _Book of Mormon_.
+
+The idea is similar to that in the \\(\Delta\\)-method but with a few tweaks. We look to compare word frequencies between a query text and the corpus of a single author. Let us introduce some definitions. Let \\(\mu_{ij} := f_i(B_j)\\) and and \\(\mu_i := f_i(C)\\) be the frequencies with which the token \\(i\\) is used in the texts of an author \\(j\\) and within the entire text respectively. These are the 'centroids' referred to in the method title.
+
+The crux behind this technique is that we 'shrink' the author frequencies towards the corpus frequencies, and if they are close, we treat them as equivalent. The rationale behind this is if the two frequencies are close, it doesn't tell us much about how the author is different from the entire corpus. So we 'shrink' the small differences down to 0 and the remaining differences are the important ones which discriminate well on the author's style.
+
+Formally, the process looks like the following. Define the 'distance' between the author mean \\(\mu_{ij}\\) and the corpus mean \\(\mu_i\\) for a token \\(i\\) to be
+
+$$d_{ij} = \frac{\mu_{ij} - \mu_i}{m_js_i} \qquad(1)$$
+
+where \\(s_i\\) is the "within-class standard deviation" for a token is equal to (recalling \\(M\\) is the total number of texts and \\(J\\) is the number of authors):
+
+$$ s_i^2 = \frac{1}{M-J}\sum_{j=1}^{J}\sum_{A_k \in B_j} (f_i(A_k) - \mu_{ij})^2 $$
+
+and \\(m_j\\) is a term which makes the denominator of \\((1)\\) equal to the estimated standard error:
+
+$$ m_j = \sqrt{\frac{1}{|B_j|} - \frac{1}{M}} $$
+
+A> Question for author: What is the statistical rationale for this standardisation?
+
+We 'shrink' \\(d_{ij}\\) so that the distance of \\(\mu_{ij}\\) is closer to the entire corpus mean. We do this by picking a \\(\delta>0\\) and moving \\(d_{ij}\\) \\(\delta\\) closer to 0. If \\(|d_{ij}| < \delta\\), then we just say the distance is 0.
+
+$$d'_{ij} = \begin{cases}
+d_{ij} - \delta  &\text{if } d_{ij} > 0, d_{ij} > \delta \\
+d_{ij} + \delta  &\text{if } d_{ij} < 0, d_{ij} < -\delta \\
+0  &\text{otherwise}
+\end{cases}$$
+
+Then, by rearranging \\((1)\\), we can re-define the frequency of a particular token for a given author. We say:
+
+$$\mu'_{ij} = \mu_i + d'_{ij}m_js_i$$
+
+So the new frequency for a token and author will be closer to the entire corpus frequency than it was before, or exactly equal to it. Increasing \\(\delta\\) corresponds to more tokens for an author being 'shrunk' to the entire corpus frequency.
+
+We can now define a distance function between a query text and an author. We take the sum of the standardised, squared distances between the frequency of each token in the query text and the 'shrunken' frequency for that taken in the author's corpus (recall \\(N\\) is the number of tokens we elect to analyse):
+
+$$D(Q, B_j) := \sum_{i=1}^{N} \frac{(f_i(Q) - \mu'_{ij})^2}{s_i^2}$$
+
+A> Question for author: And again, what is the statistical rationale for this standardisation?
+
+As before, we say that the most similar author to the query text is the one whose corpus has the smallest distance to that query text.
+
+When applied to the problem at hand, Savoy found that for values of \\(\delta\\) of \\(0.2, 0.5, 0.7, 1.0\\) and with the top \\(100, 200, 300, 400, 500, 1000, 2000\\) tokens used, then the closest author for each of the seven Ferrante novels was again Starnone.
+
+When increasing \\(\delta\\) to \\(2.0\\) lots more author frequencies are shrunk to the global frequency so the analysis depends on less information. In this case, we start to see results which suggest others as the closest author to Ferrante.
 
 
 ## Conclusion
 
-Each of these methods suggests the closet stylometric match in the corpus is the works of Dominique Starnone. However, the evidence to suggest that he is almost certainly the "hidden hand behind Elena Ferrante" remains not entirely convincing.
+Each of these methods suggests the closet stylometric match in the corpus is the works of Dominique Starnone. However, the evidence presented in this paper to suggest that he is almost certainly the "hidden hand behind Elena Ferrante" remains not entirely convincing.
+
 
 ### Correlative techniques
 Firstly, one might think that because we have used multiple different methods to attack the problem and they have all produced the same answer, then we should be much more confident than had we used just a single method. However, each of the three techniques applied in this paper is merely a variation on a single theme. They all analyse the frequency with which certain words are used in a text compared to other texts. We should expect to see a high correlation between the answers of each. Importantly, if there is an error in one analysis, it is likely to be present in all the analyses.
+
+### Calibration
+We could have more trust in the conclusion of the paper if we had general data about the accuracy of the techniques. For example, if we created 1000 corpora, and for each hid a couple of texts by known authors (with other texts in the corpus), how many times did the technique produce the correct answer? One limited [example](https://doi.org/10.1093/llc/fqq001) shows that the nearest shrunken centroids method can correctly attribute 70 of the known Federalist Papers authors (the \\(\Delta\\)-method mis-identifies 3 of the 70).
+
 
 ### Closed set search
 Another criticism of the paper would be to note that it takes a self-confessed 'closed-set' approach. That is, it assumes the author must be one of the pre-selected candidates. Savoy notes that "[t]he underlying corpus contains all novelists that have been mentioned as possible secret hands behind Ferrante". However, as noted in the _New York Review of Books_ article above, Stanone's wife, Anita Raja is a likely candidate yet she has no works in the selected corpus. In fairness to Savoy, she has no original published works so her writing style could not be analysed.
@@ -158,4 +207,4 @@ Based on the exposition in the present paper by Jacques Savoy, it appears that S
 Additional [qualitative analysis](http://www.the-next-stage.com/2017/03/laces-powerful-novel-by-domenico.html), provides biographyical evidence for the authorship of Starnone over Raja:
 > The powerfully rendered portrait of growing up in deep poverty in 1950’s Naples feels like it was written from first hand experience. Raja did not have this direct experience but Starnone, like the fictional Ferrante, was the son of a seamstress and did grow up in Naples.
 
-This correspondent concludes that is most likely that Starnone is Ferrante, followed by Ferrante as a joint project between the two (it would be hard not to collaborate on some level as a married couple) and finally the Raja is Ferrante. This correspondent assigns a negligible probability to any other author.
+This expositor concludes that is most likely that Starnone is Ferrante, followed by Ferrante as a joint project between the two (it would be hard not to collaborate on some level as a married couple) and finally that Raja is Ferrante. This expositor assigns a negligible probability to any other author.
