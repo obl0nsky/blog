@@ -14,34 +14,32 @@
         };
 
         inherit (pkgs) lib;
-      in
-      {
+        my-hugo = pkgs.hugo.overrideAttrs (old:
+          {
+            meta.broken = false;
+          });
+
         oblonsky = pkgs.stdenv.mkDerivation {
           name = "home"; # our package name, irrelevant in this case
           src = ./.;
           buildPhase = ''
-            ${pkgs.hugo}/bin/hugo --minify
+            ${my-hugo}/bin/hugo --minify
           '';
           installPhase = ''
             cp -r public $out
           '';
-          meta = with pkgs.lib; {
-            description = "obl0nsky";
-            license = licenses.cc-by-nc-sa-40;
-            platforms = platforms.all;
-          };
         };
-        packages.default = rt;
+      in
+      {
+        packages.default = oblonsky;
 
         apps.default = flake-utils.lib.mkApp {
           drv = oblonsky;
         };
 
         devShells.default = pkgs.mkShell {
-          inputsFrom = builtins.attrValues self.checks;
-
           buildInputs = [
-            pkgs.hugo
+            my-hugo
           ];
         };
       });
